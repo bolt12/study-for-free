@@ -1,1 +1,1 @@
-# free-monads-study
+# study-for-free
