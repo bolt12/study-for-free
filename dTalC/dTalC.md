@@ -20,7 +20,7 @@ form, instead you use the following type:
 data Expr f = In (f (Expr f))
 ```
 
-Where `f` is the signature of the constructors. So if we have wanted expressions that
+Where `f` is the signature of the constructors. So if we want expressions that
 consisted only on integers we'd write the following:
 
 ```Haskell
@@ -65,7 +65,7 @@ addExample = Add (Val 118) (Val 1219)
 
 Although we were able to combine the two types and build a more powerful expression, it is
 painful to write the expression itself. Furthermore, it doesn't scale well if we want to 
-add more types since we'll have to update the any values written because the injections
+add more types since we'll have to update any values written because the injections
 might not be right.
 
 ### How to Evaluate expressions
@@ -89,7 +89,7 @@ instance (Functor f, Functor g) => Functor (f :+: g) where
     fmap f (InR e) = InR (f e)
 ```
 
-These instances are important because tey let us fold over any value of type `Expr f`, if
+These instances are important because they let us fold over any value of type `Expr f`, if
 `f` is a Functor:
 
 ```Haskell
@@ -163,7 +163,7 @@ val :: (Val :<: f ) => Int -> Expr f
 You may want to read the type constraint `Add :<: f` as "any signature f that
 supports addition."
 
-the constraint `sub :<: sup` should only be satisfied if it is possible to inject 'sub'
+The constraint `sub :<: sup` should only be satisfied if it is possible to inject 'sub'
 into 'sup'. Swiestra proposes the following type class:
 
 ```Haskell
@@ -194,7 +194,7 @@ Given this we can use this type class to define our smart constructors:
 
 ```Haskell
 inject :: (g :<: f) => g (Expr f) -> Expr f
-inject = In ◦ inj
+inject = In . inj
 
 val :: (Val :<: f) => Int -> Expr f
 val x = inject (Val x)
@@ -216,7 +216,7 @@ hell `g (Expr f)` is supposed to mean and how the hell `inject (Val 1)` works wh
 :: Val a`, I will explain:
 
 `g :<: f` seems to be "g is subtype of f" as in "I can transform `g a` into `f a`". So, 
-inject works because when you know you can turn `g` into `f`, you can use 
+`inject` works because when you know you can turn `g` into `f`, you can use 
 `In :: f (Expr f) -> Expr f` on `inject :: g a -> f a` to make `g (Expr f)` into `Expr f`
 
 More intuitively, what you want is to automate the injection and get an `Expr f` out of a
@@ -233,7 +233,7 @@ only one function that allows us to do that we have no other choice but to use `
 (sub :<: sup) => sub a -> sup a`.
 
 - Final type: `Expr f`
-- Function: `inject :: (sub :<: sup) => sup a -> Expr f`
+- Function type: `inject :: (sub :<: sup) => sup a -> Expr f`
 - Function implementation: `inject = _ . inj`
 
 In the function implementation we used `inj` and consequently the type definition changed
@@ -247,7 +247,7 @@ a`. Since there's only one way to construct things of type `Expr f` we use that 
 
 Finally we have the same implementation as Swiestra but the types still cause some
 confusion! Since we want the final type to be `Expr f` and the only way to get `Expr f` is
-by calling `In` then `sup a ~ f (Expr f)` which means that `sup ~ f` and `a ~ Expr f`!
+by calling `In` then, `sup a ~ f (Expr f)` which means that `sup ~ f` and `a ~ Expr f`!
 
 Imagine we are instanciating for `Expr (Val :+: Add)` and calling `inject (Val
 1)`, in this case `sup` functor above needs to be `(Val :+: Add)` since we can inject
@@ -266,7 +266,7 @@ possible to do so without recurring to heavy machinery.
 Free Monads is a construction that, provided a Functor it gives a Monad back:
 
 ```Haskell
-data Free f a = Pure a | Impure (f (Free f a))
+data Term f a = Pure a | Impure (f (Term f a))
 ```
 
 Where `Pure a` represents a pure value computation and `Impure` an impure computation. 
@@ -301,11 +301,11 @@ primitive functions from the Haskell Prelude. To do so, we define a function `ex
 that takes pure terms to their corresponding impure programs.
 
 ```Haskell
-exec :: Exec f => Free f a -> IO a
-exec = foldFree return execAlgebra
+exec :: Exec f => Term f a -> IO a
+exec = foldTerm return execAlgebra
     where
-        foldFree :: Functor f => (a -> b) -> (f b -> b) -> Free f a -> b
-        foldFree = ...
+        foldTerm :: Functor f => (a -> b) -> (f b -> b) -> Term f a -> b
+        foldTerm = ...
 ```
 
 Assuming the Functor instances and the type class instances are implemented we can use the
@@ -321,16 +321,17 @@ cat fp = do
 
 *NOTE:* The type signature of `cat` could be as follows 
 `(Teletype :<: f, FileSystem :<: f) => FilePath => Term f ()` and there is a clear choice
-here. We could choose to let `cat` work in any `Free` that
+here. We could choose to let `cat` work in any `Term` that
 supports these two operations; or we could want to explicitly state that `cat` should
-only work in the `Free (Teletype :+: FileSystem)` monad.
+only work in the `Term (Teletype :+: FileSystem)` monad.
 
 Now the type of `cat` tells us exactly what kind of effects it uses: a much healthier
 situation than a *single monolithic* IO monad. For example, our types guarantee
-that executing a term in the Term Teletype monad will not overwrite any files on
-our hard disk. Another very good advantage of using this technique is that we can define
+that executing a term in the `Term Teletype` monad will not overwrite any files on
+our hard disk. Other very good advantages of using this technique is that we can define
 pure interpretation in order to test if the behaviour of the program logic is correct
-without the need to setup a whole new testing dedicated project!
+without the need to setup a whole new testing dedicated project, and the fact that we can
+reutilize the effects in a modular fashion!
 
 ### References
 
