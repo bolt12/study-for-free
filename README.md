@@ -16,3 +16,4 @@ By order, hopefully
 - [Two-Level Types and Parameterized Modules](https://www.researchgate.net/publication/2538376_Two-Level_Types_and_Parameterized_Modules_Functional_Pearls)
 - [Building interpreters by composing monads](https://dl.acm.org/citation.cfm?id=178068)
 - [Composing  monads  using  coproducts](http://www.informatik.uni-bremen.de/~clueth/papers/icfp02.pdf)
+- [Sandy Maguire's blog posts](https://reasonablypolymorphic.com/blog/archives/)
