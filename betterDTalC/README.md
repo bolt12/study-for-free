@@ -195,7 +195,7 @@ outj :: Outjectable f fs => Summed fs a -> Maybe (f a)
 Just (Lit 1)
 ```
 
-If we experiment on the Free monadic constructio from DTalC:
+If we experiment on the Free monadic construction from DTalC:
 
 *NOTE:* The `Lit` data constructor now needs to have a second argument `a` to carry the
 rest of the computation!
@@ -240,7 +240,7 @@ Just (Lit 1 (Impure (Elsewhere (Here (Lit 2 (Impure (Here (Add (Impure (Elsewher
 If we try to get `Add`: 
 
 ```
-outTerm (program :: Term (Summed [Add, Lit]) Int) :: Maybe (Add (Term (Summed '[Add, Lit]) Int))
+> outTerm (program :: Term (Summed [Add, Lit]) Int) :: Maybe (Add (Term (Summed '[Add, Lit]) Int))
 Nothing
 ```
 
