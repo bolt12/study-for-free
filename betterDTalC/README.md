@@ -9,7 +9,7 @@ This post presents a variation of DTalC which is type-safe, and contains the mis
 
 ### Review of Data Types a la Carte
 
-Sandy Maguire presents in his RPG generator example needs a way to be able "to mix and match 
+Sandy Maguire presents, in his RPG generator example, a way to be able "to mix and match 
 individual constructors into one larger data structure, which we can then transform as we see fit".
 However, Data Types a la Carte isn't as type safe as it should be and has missing
 machinery, in particular, the ability to remove constructors from the coproduct.
@@ -17,17 +17,17 @@ machinery, in particular, the ability to remove constructors from the coproduct.
 - Not type safe enough
 - Missing machinery (Removing constructors from the coproduct)
 
-The class (:<:) won't find the right injection for any sum tree which isn't right
+The class `:<:` won't find the right injection for any sum tree which isn't right
 associative, since it only recurses right.
 
 Sandy defends that if we must adhere to a strict convention in order for things to work it
-means that that solution is very bug prone.
+means that the solution is very bug prone.
 
 ### Better Data Types a la Carte
 
 #### Type safe injections
 
-As we stated, the problem with the (:<:) class is that we need to adopt the convention to
+As we stated, the problem with the `:<:` class is that we need to adopt the convention to
 only build right associative sum trees. The fun thing is that, right associative sum trees
 are isomorphic to lists and we should use that instead! But how? Sandy Maguire's uses type
 level black magic to promote term level objects to the type level by using the `{-#
@@ -37,7 +37,7 @@ write type level functions!
 So, the following type class is introduced:
 
 ```Haskell
-class Summable (fs :: [\* -> \*]) where
+class Summable (fs :: [* -> *]) where
     data Summed fs :: * -> * 
 ```
 
@@ -61,7 +61,7 @@ instance Summable '[] where
 - What should happen if we want to create a sum tree of 0 types? Nothing? Give an error?
   NO! We should... make it impossible to construct, thus the use of Void. Sandy gives a
   good explanation too: "notice that `Either a Void` must be `Left a`, since the Left 
-  branch can never be constructed.". This is a very nice thing because it implies that
+  branch can never be constructed". This is a very nice thing because it implies that
   the compiler will be able to infer the right injection.
 
 ```Haskell
@@ -74,9 +74,10 @@ deriving instance Functor (Summed fs) => Functor (Summed (f ': fs))
 ```
 
 - Step case
-- Summed for a non-empty type level list is either the head of the list (`Here`) or the
+- `Summed` for a non-empty type level list is either the head of the list (`Here`) or the
   tail (`Elsewhere`).
-- For reasons that do not matter (and I don't understand) we need to specify that `Summed` is a functor like that.
+- For reasons that do not matter (and I don't understand) we need to specify that `Summed` 
+  is a functor like that.
 
 This gives us what we want: A data type that builds a nested sum-type from a type level
 list of other types.
@@ -84,7 +85,7 @@ list of other types.
 Now we can define `inj` just like DTalC:
 
 ```Haskell
-class Injectable (f :: * -> \*) (fs :: [\* -> \*]) where
+class Injectable (f :: * -> *) (fs :: [* -> *]) where
     inj :: f a -> Summed fs a
 ```
 
@@ -180,6 +181,74 @@ Elsewhere (Here (Add (Lit 1) (Lit 2)))
 > inj (Add (Lit 1) (Lit 2)) :: (Summed '[Add, Lit] (Lit a))
 Here (Add (Lit 1) (Lit 2))
 ```
+
+If you're like me and are a little confused on what it means to "outject" a data
+constructor look at this:
+
+```
+>:t (Here (Lit 1))
+Here (Lit 1) :: Summed (Lit : fs) a
+>:t outj
+outj :: Outjectable f fs => Summed fs a -> Maybe (f a)
+>outj (Here (Lit 1))
+> outj (Here (Lit 1)) :: Maybe (Lit a)
+Just (Lit 1)
+```
+
+If we experiment on the Free monadic constructio from DTalC:
+
+*NOTE:* The `Lit` data constructor now needs to have a second argument `a` to carry the
+rest of the computation!
+
+```Haskell
+> :t (Impure (Here (Lit 1 (Pure 1))))
+(Impure (Here (Lit 1 (Pure 1))))
+  :: Num a => Term (Summed (Lit : fs)) a
+> :t program
+program
+  :: (Summable f, Functor (Summed f), Injectable Lit f,
+      Injectable Add f, Outjectable Lit f, Outjectable Add f) =>
+     Term (Summed f) Int
+```
+
+The order of the type list makes difference but the compiler is able to infer everything:
+
+```
+> (program :: Term (Summed [Add, Lit]) Int)
+Impure (Elsewhere (Here (Lit 1 (Impure (Elsewhere (Here (Lit 2 (Impure (Here (Add (Impure (Elsewhere (Here (Lit 1 (Pure 2))))) (Impure (Elsewhere (Here (Lit 2 (Pure 4)))))))))))))))
+> (program :: Term (Summed [Lit, Add]) Int)
+Impure (Here (Lit 1 (Impure (Here (Lit 2 (Impure (Elsewhere (Here (Add (Impure (Here (Lit 1 (Pure 2)))) (Impure (Here (Lit 2 (Pure 4)))))))))))))
+```
+
+*NOTE:* The leafs of the tree actually contain the last computation to be made!
+
+Extracting `Lit`: 
+
+```
+> outTerm (Impure p) = out p
+> :t outTerm
+outTerm
+  :: Outjectable f fs =>
+     Term (Summed fs) a -> Maybe (f (Term (Summed fs) a))
+```
+
+```
+> outTerm (program :: Term (Summed [Add, Lit]) Int) :: Maybe (Lit (Term (Summed '[Add, Lit]) Int))
+Just (Lit 1 (Impure (Elsewhere (Here (Lit 2 (Impure (Here (Add (Impure (Elsewhere (Here (Lit 1 (Pure 2))))) (Impure (Elsewhere (Here (Lit 2 (Pure 4)))))))))))))
+```
+
+If we try to get `Add`: 
+
+```
+outTerm (program :: Term (Summed [Add, Lit]) Int) :: Maybe (Add (Term (Summed '[Add, Lit]) Int))
+Nothing
+```
+
+This happens because `outTerm` only provides the first layer of the `Term` type to `outj`
+and since it cannot find any `Add` constructors it returns `Nothing`. Nonetheless this
+gives a pretty nice intuition on how we are able to get all the constructors for a given
+type in a program and do something with them!
+
 
 ### References
 
