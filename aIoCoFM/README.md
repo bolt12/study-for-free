@@ -1,4 +1,4 @@
-## Better Data Types a la Carte
+## Asymptotic Improvement of Computations over Free Monads
 
 We present a low-effort program transformation to improve
 the efficiency of computations over free monads in Haskell. The develop-
@@ -12,6 +12,7 @@ achieve true asymptotic runtime improvements. We demonstrate this by
 examples for which the complexity is reduced from quadratic to linear.
 
 *Author:* Janis Voigtlander
+
 *Link:* https://www.janis-voigtlaender.eu/papers/AsymptoticImprovementOfComputationsOverFreeMonads.pdf
 
 ## Notes
