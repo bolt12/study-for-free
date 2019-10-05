@@ -3,6 +3,7 @@
 This post presents a variation of DTalC which is type-safe, and contains the missing machinery.
 
 *Author:* Sandy Maguire
+
 *Link:* https://reasonablypolymorphic.com/blog/better-data-types-a-la-carte/
 
 ## Notes

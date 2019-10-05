@@ -5,6 +5,7 @@ individual components. We also explore how the same technology can be used to co
 free monads and, as a result, structure Haskell’s monolithic IO monad.
 
 *Author:* Wouter Swiestra
+
 *Link:* https://www.cs.ru.nl/~W.Swierstra/Publications/DataTypesALaCarte.pdf
 
 ## Notes
