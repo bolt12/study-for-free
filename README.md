@@ -6,7 +6,7 @@ By order, hopefully
 
 - ~[Data Types a la Carte](https://www.cs.ru.nl/~W.Swierstra/Publications/DataTypesALaCarte.pdf)~
 - ~[Better Data Types a la Carte](https://reasonablypolymorphic.com/blog/better-data-types-a-la-carte/)~
-- [Asymptotic Improvement of Computations over Free Monads](https://www.janis-voigtlaender.eu/papers/AsymptoticImprovementOfComputationsOverFreeMonads.pdf)
+- ~[Asymptotic Improvement of Computations over Free Monads](https://www.janis-voigtlaender.eu/papers/AsymptoticImprovementOfComputationsOverFreeMonads.pdf)~
 - [Reflection without remorse](http://okmij.org/ftp/Haskell/zseq.pdf) / [Haskell 2014: Reflection without Remorse: Revealing a hidden sequence to speed up monadic reflection](https://www.youtube.com/watch?v=_XoI65Rxmss&t=5s)
 - [Extensible Effects, an alternative to Monad Transformers](http://okmij.org/ftp/Haskell/extensible/index.html)
 - [Extensible Effects vs Data Types a la Carte](http://okmij.org/ftp/Haskell/extensible/extensible-a-la-carte.html)

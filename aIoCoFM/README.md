@@ -38,7 +38,7 @@ appends two lists in their code.
 ```
 
 As you can see `(++)` traverses its first argument which leads to left associative appends
-to repeatadly traverse the intermediate lists:
+to repeatedly traverse the intermediate lists:
 
 - Left associative append = `((a ++ b) ++ c) ++ d`
 - Right associative append = `a ++ (b ++ (c ++ d))`
@@ -103,7 +103,7 @@ Therefore: `appendR (rep l1) (rep l2) = rep (l1 ++ l2)`
 We can also deduce: `abs (appendR f g) = (abs f) ++ (abs g)`
 
 Function composition is an efficient operation. It can always be performed in constant
-time. For a more thourough explanation on the reverse check this [post](http://h2.jaguarpaw.co.uk/posts/demystifying-dlist/)
+time. For a more thourough explanation on the list `reverse` check this [post](http://h2.jaguarpaw.co.uk/posts/demystifying-dlist/).
 
 ### The Generic Setting
 
@@ -122,9 +122,9 @@ improve :: Functor f => (forall μ . FreeLike f μ => μ a) -> Free f a
 improve m = abs m
 ```
 
-that, once proved the relations
+With this function, once proved the relations
 between the representation and abstraction of the datatypes and the equivalence of the
-overloaded methods, puts stronger requirements on its argument `m` and that is what 
+overloaded functions, puts stronger requirements on its argument `m` and that is what 
 enables to establish the correctness of adding `improve` at will wherever the 
 type checker allows doing so.
 
