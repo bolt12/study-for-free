@@ -128,7 +128,42 @@ overloaded methods, puts stronger requirements on its argument `m` and that is w
 enables to establish the correctness of adding `improve` at will wherever the 
 type checker allows doing so.
 
+### More details
+
+This stuff is known as the _Codensity Monad_ and the technique presented by Hughes was
+known in 1854 long before computers:
+
+*Cayley’s Theorem*: every monoid is isomorphic to a submonoid in its monoid of
+endomorphisms.
+
+The trick we do at the lists, Monoid level is to replace every `[a]` with a `[a] -> [a]`. 
+The significance of `[a] -> [a]` in this is that it's the exponential object in this category 
+(i.e. the set underlying its monoid of endomorphisms). When we move to the Free, Monad level, 
+we first need to figure out what the exponential object is. Whereas at the List, Monoid level 
+it was a type: `* -> * -> *`, at the Free, Monad level we need some type 
+`Exponential :: (* -> *) -> (* -> *) -> (* -> *)`, so we can replace every `Free f` with 
+`Exponential (Free f) (Free f)`.
+
+
+"That's a nice and mechanical way to think about this, but how much of this is close to the 
+[theory](https://ncatlab.org/nlab/show/codensity+monad) counterpart?" 
+_Do we really think about it in terms of kinds?_
+
+Well no, in the theory you don't worry about the haskell type/kind system, but you do 
+actually structure it as a question of "ok, I'm moving to the category of endofunctors on 
+Set; to apply Cayley's theorem for monoids in this category (i.e. monads), I just need to find 
+the exponential object in this category". Then I will replace `Free f x` with 
+`Exponential (Free f) (Free f) x` just as I replaced `[f]` with `[f] -> [f]`
+
+*Spoiler:* The exponential in the category of endofunctors on sets is 
+`data RightKan f g a = RightKan { runRightKan :: forall x. (a -> f x) -> g x }`
+and `type Codensity m a = RightKan m m a` if you want a much better and more rigorous explanation, go 
+through https://www.fceia.unr.edu.ar/~mauro/pubs/Notions_of_Computation_as_Monoids.pdf
+they explicitly describe how to apply Cayley's theorem for monoids in various categories.
+
 ### References
 
 - https://www.janis-voigtlaender.eu/papers/AsymptoticImprovementOfComputationsOverFreeMonads.pdf
 - https://www.cs.tufts.edu/~nr/cs257/archive/john-hughes/lists.pdf
+- https://begriffs.com/posts/2016-02-04-difference-lists-and-codennsity.html
+- Useful contributions from @TheMatten and @masaeedu from FP Slack.
