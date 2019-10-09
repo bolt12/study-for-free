@@ -161,6 +161,64 @@ and `type Codensity m a = RightKan m m a` if you want a much better and more rig
 through https://www.fceia.unr.edu.ar/~mauro/pubs/Notions_of_Computation_as_Monoids.pdf
 they explicitly describe how to apply Cayley's theorem for monoids in various categories.
 
+### Playground
+
+Here I'll share the results of some experiments I did with the `revEcho` program.
+
+Following the paper we get the following:
+
+```Haskell
+data F_IO f = GetChar (Char -> f)
+            | PutChar Char f
+            deriving (Functor)
+
+getChar :: FreeLike F_IO m => m Char
+getChar = wrap (GetChar return)
+
+putChar :: FreeLike F_IO m => Char -> m ()
+putChar c = wrap (PutChar c (return ()))
+
+program :: FreeLike F_IO m => m ()
+program = do
+    c <- getChar 
+    when (c /= ' ') $ do
+        program
+        putChar c
+
+run :: Free F_IO a -> IO a
+run (Return a) = return a
+run (Wrap (GetChar f)) = P.getChar >>= run . f
+run (Wrap (PutChar c f)) = P.putChar c >> run f
+
+main :: IO ()
+main = run program
+```
+
+Running this program for a ~10K file with random characters:
+
+```
+real    0m19.588s
+user    0m19.035s
+sys     0m0.200s
+```
+
+A file with ~100K timed out for more than 6 minutes given the n^2 probelm.
+
+*BUT*, adding the magic `improve` function:
+
+```Haskell
+main :: IO ()
+main = run (improve program)
+```
+
+Resulted on a much more (linear) performance gain:
+
+```Haskell
+real    0m0.028s
+user    0m0.022s
+sys     0m0.006s
+```
+
 ### References
 
 - https://www.janis-voigtlaender.eu/papers/AsymptoticImprovementOfComputationsOverFreeMonads.pdf
