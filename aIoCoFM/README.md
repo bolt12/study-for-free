@@ -1,8 +1,8 @@
 ## Asymptotic Improvement of Computations over Free Monads
 
 We present a low-effort program transformation to improve
-the efficiency of computations over free monads in Haskell. The develop-
-ment is calculational and carried out in a generic setting, thus applying
+the efficiency of computations over free monads in Haskell. The development
+is calculational and carried out in a generic setting, thus applying
 to a variety of datatypes. An important aspect of our approach is the
 utilisation of type class mechanisms to make the transformation as trans-
 parent as possible, requiring no restructuring of code at all. There is also
