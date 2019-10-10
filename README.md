@@ -7,10 +7,11 @@ By order, hopefully
 - ~[Data Types a la Carte](https://www.cs.ru.nl/~W.Swierstra/Publications/DataTypesALaCarte.pdf)~
 - ~[Better Data Types a la Carte](https://reasonablypolymorphic.com/blog/better-data-types-a-la-carte/)~
 - ~[Asymptotic Improvement of Computations over Free Monads](https://www.janis-voigtlaender.eu/papers/AsymptoticImprovementOfComputationsOverFreeMonads.pdf)~
+- [Fusion for Free Efficient Algebraic Effect Handlers](https://people.cs.kuleuven.be/~tom.schrijvers/Research/papers/mpc2015.pdf)
+- [Effect Handlers in Scope](https://www.cs.ox.ac.uk/people/nicolas.wu/papers/Scope.pdf)
 - [Reflection without remorse](http://okmij.org/ftp/Haskell/zseq.pdf) / [Haskell 2014: Reflection without Remorse: Revealing a hidden sequence to speed up monadic reflection](https://www.youtube.com/watch?v=_XoI65Rxmss&t=5s)
 - [Extensible Effects, an alternative to Monad Transformers](http://okmij.org/ftp/Haskell/extensible/index.html)
 - [Extensible Effects vs Data Types a la Carte](http://okmij.org/ftp/Haskell/extensible/extensible-a-la-carte.html)
-- [Effect Handlers in Scope](https://www.cs.ox.ac.uk/people/nicolas.wu/papers/Scope.pdf)
 - [Freer Monads, More extensible effects](http://okmij.org/ftp/Haskell/extensible/more.pdf)
 
 ### Other
